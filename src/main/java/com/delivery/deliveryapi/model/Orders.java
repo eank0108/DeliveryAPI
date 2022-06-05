@@ -25,15 +25,18 @@ public class Orders extends Timestamped {
     @Column(nullable = false)
     private Long totalPrice;
 
-    @OneToMany
-    @JoinColumn(name = "orders_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orders")
     private List<OrderFood> foods;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
 
-    public Orders(Restaurant restaurant, Long totalPrice, List<OrderFood> orderFoods) {
+    public Orders(Restaurant restaurant, Long totalPrice, List<OrderFood> orderFoods, Customer customer) {
         this.restaurantName = restaurant.getName();
         this.deliveryFee = restaurant.getDeliveryFee();
         this.totalPrice = totalPrice;
         this.foods = orderFoods;
+        this.customer = customer;
     }
 }

@@ -25,15 +25,18 @@ public class Restaurant {
     @Column(nullable = false)
     private String deliveryFee;
 
-    @OneToMany
-    @JoinColumn(name = "restaurant_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     private List<Orders> orders;
 
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     private List<Food> foods;
 
+    @OneToOne
+    @JoinColumn(name = "ceo_id")
+    private Ceo ceo;
 
     public Restaurant(RestaurantDto restaurantRequestDto) {
+
         this.name = restaurantRequestDto.getName();
         this.minOrderPrice = restaurantRequestDto.getMinOrderPrice();
         this.deliveryFee = restaurantRequestDto.getDeliveryFee();
