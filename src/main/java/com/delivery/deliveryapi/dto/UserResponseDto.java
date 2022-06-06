@@ -1,6 +1,7 @@
 package com.delivery.deliveryapi.dto;
 
 import com.delivery.deliveryapi.model.Customer;
+import com.delivery.deliveryapi.model.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,8 +14,8 @@ public class UserResponseDto {
 
     private String role;
 
-    public UserResponseDto(Customer customer) {
-        username = customer.getUsername();
-        role = customer.getRole().getAuthority();
+    public UserResponseDto(User user) {
+        username = user.getUsername();
+        role = user.getRole().getAuthority();
     }
 }

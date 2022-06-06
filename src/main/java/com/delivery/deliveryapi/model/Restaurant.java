@@ -25,15 +25,16 @@ public class Restaurant {
     @Column(nullable = false)
     private String deliveryFee;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
-    private List<Orders> orders;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id")
+    private List<Order> orders;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     private List<Food> foods;
 
     @OneToOne
-    @JoinColumn(name = "ceo_id")
-    private Ceo ceo;
+    @JoinColumn(name = "users_id")
+    private User ceo;
 
     public Restaurant(RestaurantDto restaurantRequestDto) {
 

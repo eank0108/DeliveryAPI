@@ -1,12 +1,11 @@
 package com.delivery.deliveryapi.service;
 
 import com.delivery.deliveryapi.dto.OrderFoodRequestDto;
-import com.delivery.deliveryapi.dto.OrderFoodResponseDto;
 import com.delivery.deliveryapi.dto.OrderRequestDto;
 import com.delivery.deliveryapi.dto.OrderResponseDto;
 import com.delivery.deliveryapi.model.Food;
 import com.delivery.deliveryapi.model.OrderFood;
-import com.delivery.deliveryapi.model.Orders;
+import com.delivery.deliveryapi.model.Order;
 import com.delivery.deliveryapi.model.Restaurant;
 import com.delivery.deliveryapi.repository.FoodRepository;
 import com.delivery.deliveryapi.repository.OrderFoodRepository;
@@ -64,7 +63,7 @@ public class OrderService {
         totalPrice += Long.parseLong(restaurant.getDeliveryFee());
         List<OrderFood> savedOrderFoods = orderFoodRepository.saveAll(orderFoods);
 
-        Orders order = new Orders(restaurant, totalPrice, savedOrderFoods);
+        Order order = new Order(restaurant, totalPrice, savedOrderFoods);
         return new OrderResponseDto(orderRepository.save(order));
     }
 

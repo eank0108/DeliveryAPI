@@ -3,25 +3,32 @@ package com.delivery.deliveryapi.service;
 import com.delivery.deliveryapi.dto.UserRequestDto;
 import com.delivery.deliveryapi.dto.UserResponseDto;
 import com.delivery.deliveryapi.model.Customer;
-import com.delivery.deliveryapi.repository.CustomerRepository;
+import com.delivery.deliveryapi.model.User;
+import com.delivery.deliveryapi.model.UserRoleEnum;
+import com.delivery.deliveryapi.repository.UserRepository;
+import com.delivery.deliveryapi.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
 
 @Service
-public class UserService {
-    private final CustomerRepository customerRepository;
+public class CustomerService {
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public UserService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
-        this.customerRepository = customerRepository;
+    public CustomerService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
-    public UserResponseDto registerUser(UserRequestDto userRequestDto) {
+    public ResponseEntity<Object> registerUser(UserRequestDto userRequestDto) {
         if (userRequestDto.getUsername() == null || userRequestDto.getPassword() == null) {
             throw new IllegalArgumentException("아이디, 비밀번호를 입력하세요");
         }
@@ -41,13 +48,29 @@ public class UserService {
         if (userRequestDto.getPassword().length() < 4) {
             throw new IllegalArgumentException("비밀번호는 4글자 이상 입력해 주세요.");
         }
-        Customer customer = customerRepository.findByUsername(userRequestDto.getUsername());
-        if (customer != null) {
+        User user = userRepository.findByUsername(userRequestDto.getUsername());
+        if (user != null) {
             throw new IllegalArgumentException("이미 존재하는 아이디 입니다.");
         }
         userRequestDto.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+        userRequestDto.setRoleEnum(UserRoleEnum.USER);
 
 
-        return new UserResponseDto(customerRepository.save(new Customer(userRequestDto)));
+        return new ResponseEntity<>(
+                new UserResponseDto(userRepository.save(new User(userRequestDto))), HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> login(UserRequestDto userRequestDto) {
+        User user = userRepository.findByUsername(userRequestDto.getUsername());
+        if (user == null) {
+            return new ResponseEntity<>("로그인 정보가 없습니다.", HttpStatus.UNAUTHORIZED);
+        }
+        if (!passwordEncoder.matches(userRequestDto.getPassword(), user.getPassword())) {
+            // System.out.println(passwordEncoder.encode(userRequestDto.getPassword()));
+            // System.out.println(passwordEncoder.encode(user.getPassword()));
+            return new ResponseEntity<>("로그인 실패", HttpStatus.UNAUTHORIZED);
+        }
+        String token= jwtUtil.generateJwtToken(user);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 }

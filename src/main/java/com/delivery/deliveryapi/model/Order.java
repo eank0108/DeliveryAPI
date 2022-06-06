@@ -11,7 +11,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Orders extends Timestamped {
+@Table(name = "orders")
+public class Order extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -25,18 +26,20 @@ public class Orders extends Timestamped {
     @Column(nullable = false)
     private Long totalPrice;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orders")
-    private List<OrderFood> foods;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "orders_id")
+    private List<OrderFood> orderFoods;
+
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "users_id")
+    private User customer;
 
 
-    public Orders(Restaurant restaurant, Long totalPrice, List<OrderFood> orderFoods, Customer customer) {
+    public Order(Restaurant restaurant, Long totalPrice, List<OrderFood> orderFoods) {
         this.restaurantName = restaurant.getName();
         this.deliveryFee = restaurant.getDeliveryFee();
         this.totalPrice = totalPrice;
-        this.foods = orderFoods;
-        this.customer = customer;
+        this.orderFoods = orderFoods;
+        // this.customer = customer;
     }
 }

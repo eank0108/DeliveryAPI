@@ -4,20 +4,18 @@ import com.delivery.deliveryapi.dto.UserRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Setter@Getter@NoArgsConstructor
-@Entity
-public class Customer extends Users{
+@Embeddable
+public class Customer{
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer")
-    List<Orders> orders;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
+    List<Order> orders;
 
-    public Customer(UserRequestDto userRequestDto) {
-        super.setUsername(userRequestDto.getUsername());
-        super.setPassword(userRequestDto.getPassword());
-        super.setRole(UserRoleEnum.USER);
-    }
+
 }
